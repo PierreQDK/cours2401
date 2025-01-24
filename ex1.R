@@ -73,8 +73,8 @@ compter_nombre_d_adjoint(df_nantes)
 trouver_personne_la_plus_vieille <- function(data_exercice) {
   
 
-df$Date.de.naissance <- as.Date(df$Date.de.naissance, format = "%Y-%m-%d")
-date_plus_ancienne <- min(df$Date.de.naissancena.rm = TRUE)
+df$Date.de.naissance <- as.Date(data_exercice$Date.de.naissance, format = "%Y-%m-%d")
+date_plus_ancienne <- min(data_exercice$Date.de.naissancena.rm = TRUE)
 
 return(date_plus_ancienne)
 
@@ -150,4 +150,32 @@ sapply(list(df_nantes), Compter_eclu2)
 
 
 
+# correection 5
 
+data_exercice <- as_tibble(data_exercice)
+
+#install.packages("lubridate")
+library(lubridate)
+trouver_elu_vieux <- function(data_exercice) {
+  schema <- c("Code.du.département", "Libellé.du.département", "Code.de.la.collectivité.à.statut.particulier", 
+              "Libellé.de.la.collectivité.à.statut.particulier", "Code.de.la.commune", 
+              "Libellé.de.la.commune", "Nom.de.l.élu", "Prénom.de.l.élu", 
+              "Code.sexe", "Date.de.naissance", "Code.de.la.catégorie.socio.professionnelle", 
+              "Libellé.de.la.catégorie.socio.professionnelle", "Date.de.début.du.mandat", 
+              "Libellé.de.la.fonction", "Date.de.début.de.la.fonction", "Code.nationalité"
+  )
+  
+  stopifnot(identical(colnames(data_exercice),  schema))
+  
+  data_exercice |>
+    mutate(Date.de.naissance = dmy(Date.de.naissance)) |>
+    slice(which.min(Date.de.naissance)) |>
+    select(Nom.de.l.élu, Prénom.de.l.élu, Date.de.naissance)
+  
+  
+}
+
+trouver_elu_vieux(df_nantes)
+
+# Pour ranger en ligne 
+# purrr::map_df(list(df_Faverelles, df_loire_Atlantique), f = trouver_elu_vieux)|>
